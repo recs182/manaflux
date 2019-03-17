@@ -25,10 +25,10 @@ class ItemSetHandler {
   static async getItemSets() {
     const CHAMPIONS_PATH = path.join(Mana.getStore().get('league-client-path'), `\\Config\\Champions\\`);
 
-    await this._ensureDir(path.join(Mana.getStore().get('league-client-path'), `\\Config\\`));
-    await this._ensureDir(CHAMPIONS_PATH);
+    await Mana.utils.fs.ensure(path.join(Mana.getStore().get('league-client-path'), `\\Config\\`));
+    await Mana.utils.fs.ensure(CHAMPIONS_PATH);
 
-    const dir = await this._readdir(CHAMPIONS_PATH);
+    const dir = await Mana.utils.fs.readdir(CHAMPIONS_PATH);
 
     if (dir.length === 0) return [];
 
@@ -44,10 +44,10 @@ class ItemSetHandler {
   static async getItemSetsByChampionKey(key) {
     const CHAMPION_PATH = path.join(Mana.getStore().get('league-client-path') + `\\Config\\Champions\\${key}\\Recommended`)
 
-    await this._ensureDir(path.join(Mana.getStore().get('league-client-path') + `\\Config\\Champions\\${key}`));
-    await this._ensureDir(CHAMPION_PATH);
+    await Mana.utils.fs.ensure(path.join(Mana.getStore().get('league-client-path') + `\\Config\\Champions\\${key}`));
+    await Mana.utils.fs.ensure(CHAMPION_PATH);
 
-    const dir = await this._readdir(CHAMPION_PATH);
+    const dir = await Mana.utils.fs.readdir(CHAMPION_PATH);
     if (dir.length === 0) return [];
 
     let arr = [];
@@ -58,47 +58,15 @@ class ItemSetHandler {
   }
 
   static async deleteItemSets(list) {
-    for (let path of list)
-      await this._deleteFile(path);
-  }
-
-  static _ensureDir(path) {
-    return new Promise((resolve, reject) => {
-      fs.mkdir(path, err => {
-        if (err && err.code === 'EEXIST') resolve();
-        else if (err) reject(err);
-        else resolve();
-      })
-    })
-  }
-
-  static _readdir(path) {
-    return new Promise((resolve, reject) => {
-      fs.readdir(path, (err, dir) => {
-        if (err) return reject(err);
-        resolve(dir);
-      });
-    });
-  }
-
-  static _readFile(path) {
-    return new Promise((resolve, reject) => {
-      fs.readFile(path, 'utf8', function (err, data) {
-        if (err) return reject(err);
-        resolve(JSON.parse(data));
-      });
-    });
-  }
-
-  static _deleteFile(path) {
-    return new Promise((resolve, reject) => {
-      fs.unlink(path, err => {
-        if (!err) return resolve(true);
-
-        if (err.code === 'ENOENT') resolve(false);
-        else reject(err);
-      });
-    });
+    for (let path of list) {
+      try {
+        await Mana.utils.fs.delete(path);
+      }
+      catch(err) {
+        console.log('[ItemSetHandler] An error occured while deleted file', path);
+        console.error(err);
+      }
+    }
   }
 }
 

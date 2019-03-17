@@ -79,8 +79,8 @@ class ItemSet {
     const self = this;
 
     // Creates the required folders if needed
-    require('./handlers/ItemSetHandler')._ensureDir(path.join(Mana.getStore().get('league-client-path'), `\\Config\\Champions\\${this.championKey}`));
-    require('./handlers/ItemSetHandler')._ensureDir(path.join(Mana.getStore().get('league-client-path'), `\\Config\\Champions\\${this.championKey}\\Recommended`));
+    Mana.utils.fs.ensure(path.join(Mana.getStore().get('league-client-path'), `\\Config\\Champions\\${this.championKey}`));
+    Mana.utils.fs.ensure(path.join(Mana.getStore().get('league-client-path'), `\\Config\\Champions\\${this.championKey}\\Recommended`));
 
     return new Promise((resolve, reject) => {
       fs.writeFile(self.path, self.build(true, true), 'utf8', err => {
@@ -90,26 +90,12 @@ class ItemSet {
     });
   }
 
-  exists() {
-    let p = this.path;
-    return new Promise((resolve, reject) => {
-      fs.access(p, fs.constants.F_OK | fs.constants.W_OK, err => {
-        if (err && err.code === 'ENOENT') resolve(false);
-        else if (err) reject(err);
-        else resolve(true);
-      });
-    });
+  async exists() {
+    return await Mana.utils.fs.exists(this.path);
   }
 
-  delete() {
-    let p = this.path;
-    return new Promise((resolve, reject) => {
-      fs.unlink(p, err => {
-        if (err && err.code === 'ENOENT') resolve(false);
-        else if (err) reject(err);
-        else resolve(true);
-      });
-    });
+  async delete() {
+    return await Mana.utils.fs.delete(this.path);
   }
 }
 
