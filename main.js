@@ -3,14 +3,14 @@ const { app, BrowserWindow, ipcMain, globalShortcut, Menu, Tray } = require('ele
 /* Command line parameters */
 app.commandLine.appendSwitch('autoplay-policy', 'no-user-gesture-required');
 
-global.log = new (require('./objects/handlers/LoggingHandler'))(3);
-const i18n = new (require('./objects/i18n'));
+global.log = new (require('./src/objects/handlers/LoggingHandler'))(3);
+const i18n = new (require('./src/objects/i18n'));
 
 const { autoUpdater } = require('electron-updater');
 
-const LeaguePlug = require('./objects/leagueplug');
+const LeaguePlug = require('./src/objects/leagueplug');
 
-require('./objects/crash-reporter');
+require('./src/objects/crash-reporter');
 
 let connector = new LeaguePlug();
 let win, tray;
@@ -35,7 +35,7 @@ else {
 function createWindow () {
   win = new BrowserWindow({ width: 600, height: 600, frame: false, icon: __dirname + '/build/icon.' + (process.platform === 'win32' ? 'ico' : 'png'), backgroundColor: '#000A13', maximizable: false, resizable: false, show: false });
 
-  win.loadURL(`file://${__dirname}/src/index.html`);
+  win.loadURL(`file://${__dirname}/src/views/index.html`);
   win.setMenu(null);
 
   win.once('ready-to-show', () => !tray ? win.show() : null);
