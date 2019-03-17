@@ -7,6 +7,7 @@ class Mana {
   constructor() {
     UI.loading(true);
 
+    this.utils = require('./helpers/ManaUtils');
     this.devMode = ipcRenderer.sendSync('is-dev');
 
     document.getElementById('version').innerHTML = `V${this.version = app.getVersion() + (!require('electron').remote.app.isPackaged ? '-BUILD' : '')}`;
